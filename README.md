@@ -164,7 +164,9 @@ The goal of RQ3 is to evaluate whether the best-performing RAG pipelines from RQ
 - **baseline_granite.csv**  
 - **baseline_llama.csv**  
 - **baseline_mistral.csv**  
-- **baseline_qwen.csv**  
+- **baseline_qwen.csv**
+- **baseline_gpt4.csv**
+- **baseline_deepseek.csv** 
 
 These files store the **zero-shot generation results** for each model without any RAG support. They serve as baselines for comparison.
 
@@ -175,7 +177,9 @@ These files store the **zero-shot generation results** for each model without an
 - **dynamic_RAG4_granite_results.csv**  
 - **dynamic_RAG4_llama_results.csv**  
 - **dynamic_RAG4_mistral_results.csv**  
-- **dynamic_RAG4_qwen_results.csv**  
+- **dynamic_RAG4_qwen_results.csv**
+- **dynamic_RAG4_gpt4_results.csv**
+- **dynamic_RAG4_deepseek_results.csv**   
 
 These files contain the results of applying **RAG4 (HyDE-based retrieval with filtering)** to each LLM using a **dynamic threshold**.
 
@@ -186,7 +190,9 @@ These files contain the results of applying **RAG4 (HyDE-based retrieval with fi
 - **apply_HB1_dynamic_thres_granite.ipynb**  
 - **apply_HB1_dynamic_thres_llama.ipynb**  
 - **apply_HB1_dynamic_thres_mistral.ipynb**  
-- **apply_HB1_dynamic_thres_qwen.ipynb**  
+- **apply_HB1_dynamic_thres_qwen.ipynb**
+- **apply_HB1_dynamic_thres_gpt4.ipynb**
+- **apply_HB1_dynamic_thres_deepseek.ipynb**   
 
 Jupyter notebooks that run **HB1 pipeline (HyDE + full answer retrieval)** with adaptive thresholds for each LLM.
 
@@ -197,7 +203,9 @@ Jupyter notebooks that run **HB1 pipeline (HyDE + full answer retrieval)** with 
 - **zeroshot_Granite.ipynb**  
 - **zeroshot_Llama.ipynb**  
 - **zeroshot_Mistral.ipynb**  
-- **zeroshot_Qwen3.ipynb**  
+- **zeroshot_Qwen3.ipynb**
+- **zeroshot_gpt4.ipynb**
+- **zeroshot_deepseek.ipynb**   
 
 Run baseline zero-shot generation for each LLM without retrieval.
 
