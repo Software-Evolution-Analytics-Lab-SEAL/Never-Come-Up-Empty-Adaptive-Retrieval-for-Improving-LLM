@@ -4,7 +4,7 @@ Large Language Models (LLMs) have shown promise in assisting developers with cod
 
 # Experimental Workflow
 
-![Experimental Workflow](images/Overall_Workflow.PNG)
+![Experimental Workflow](images/Overall_Workflow-v2.PNG)
 
 
 ## Extract and Process Stack Overflow Dump
