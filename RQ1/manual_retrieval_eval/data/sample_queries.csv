@@ -1,0 +1,1829 @@
+test_idx,Question,Accepted Answer,Paraphrased Question,post_idx
+23,Python: How to plot different plots separately in a function?,"<p>In your example, your 3 plots do have a relationship to each other -- they share the same x data.  Subplots are perfect for displaying your plots, and you can maintain full control on how you want to label them. Here is how:</p>
+<pre><code>from matplotlib import pyplot as plt
+from numpy import*
+import math
+
+t = linspace(0, 2*math.pi, 400)
+a = sin(t)
+b = cos(t)
+c = a + b
+
+fig, (ax1, ax2, ax3) = plt.subplots(3, 1)
+
+ax1.plot(t, a, 'r')
+ax1.set(xlabel ='t', ylabel = 'sin(t)')
+ax1.set_title('Sin Graph', y=1.0, pad= -20)
+
+ax2.plot(t, b, 'b', )
+ax2.set(xlabel ='t', ylabel = 'cos(t)')
+ax2.set_title('Cos Graph', y=1.0, pad= -20)
+
+ax3.plot(t, c, 'g')
+ax3.set(xlabel ='t', ylabel = 'sin(t) + cos(t)')
+ax3.set_title('Sin + Cos Graph', y=1.0, pad= -20)
+
+plt.show()
+</code></pre>
+<p><a href=""https://i.stack.imgur.com/5zzqN.png"" rel=""nofollow noreferrer""><img src=""https://i.stack.imgur.com/5zzqN.png"" alt=""enter image description here"" /></a></p>
+<p>If you really want to do it as 3 independent plots that refer to the same formulae, you can do it as shown below.  Each plot is saved separately. Each plot shows after you close the preceding one.</p>
+<pre><code>t = linspace(0, 2*math.pi, 400)
+a = sin(t)
+b = cos(t)
+c = a + b
+
+plt.plot(t, a, 'r')
+plt.xlabel('t')
+plt.ylabel('sin(t)')
+plt.title('Sin Graph')
+plt.savefig('Sin_Graph')
+plt.show()
+
+plt.plot(t, b, 'b')
+plt.xlabel('t')
+plt.ylabel('cos(t)')
+plt.title('Cos Graph')
+plt.savefig('Cos_Graph')
+plt.show()
+
+plt.plot(t, c, 'g')
+plt.xlabel('t')
+plt.ylabel('sin(t) + cos(t)')
+plt.title('Sin + Cos Graph')
+plt.savefig('Combined_Graph')
+plt.show()
+</code></pre>
+",Python: What is the method for generating distinct plots within a single function?,3002898
+25,How can I remove the middle of a pandas group and keep the head and tail only?,"<p>You can use <a href=""https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.core.groupby.GroupBy.nth.html"" rel=""nofollow noreferrer""><code>groupby.nth</code></a> to keep the first and last samples within each group:</p>
+
+<pre><code>df = df.groupby('Item').nth([0,-1]).reset_index()
+
+    Item   Location       ID    Qty    Time
+0  995820       381  202546661    1  06:55:07
+1  995820       761  202547268    1  07:12:44
+2  995822       494  202546857    1  06:58:30
+3  999810       455  202546771    1  06:56:52
+4  999810       761  202547268    1  07:13:04
+5  999825       494  202546857    2  06:58:52
+6  999942       424  202546723    1  06:55:36
+7  999942       654  202547101    1  07:01:42
+</code></pre>
+",What is the method to extract only the beginning and end of a pandas group while omitting the central portion?,2514380
+29,pandas - how to organised dataframe based on date and assign new values to column,"<p>You can groupby on index and use <a href=""https://pandas.pydata.org/pandas-docs/stable/generated/pandas.core.groupby.DataFrameGroupBy.agg.html"" rel=""nofollow noreferrer""><code>groupby.agg</code></a> with a custom function.</p>
+
+<pre><code>df1 = res.groupby(res.index.date).agg({'v1': lambda x: x[min(x.index)], 'v2':lambda x: x[max(x.index)]})
+
+print (df1)
+
+             v1      v2
+2017-04-03  35.7    82.6
+2017-04-04  24.3    70.6
+2017-04-28  31.7    33.7
+</code></pre>
+
+<p>An alternative to resample dataframe to get 1st and last value from each day.</p>
+
+<pre><code>res=df.reset_index().groupby(df.index.date).agg(['first','last']).stack().set_index('index')
+
+Out[123]:
+
+                      v1     v2
+index       
+2017-04-03 09:15:00  35.7   35.4
+2017-04-03 16:30:00  82.7   82.6
+2017-04-04 09:15:00  24.3   24.2
+2017-04-04 16:30:00  70.2   70.6
+2017-04-28 09:15:00  31.7   31.4
+2017-04-28 16:30:00  33.0   33.7
+</code></pre>
+",Pandas - what are the methods to sort a DataFrame by date and update a specific column with new values?,2352166
+30,Why does the prev node become set as Circular instead of _Node after adding a new node to a linked list?,"<p>Here <code>Circular</code> is not an object type, it means that <code>console.log</code> found a reference to the object it's printing so it stopped going further in a loop. The <code>head.next.prev</code> is still of type <code>_Node</code> but it's the <code>_Node</code> object we're already displaying.</p>
+
+<p>When <code>console.log(main())</code> attempts to show you what <code>head.next</code> is, it does the best it can. What it finds is that <code>head.next</code> is the ""Boomer"" item, and its <code>prev</code> value points back to <code>head</code>. So when it tries to show you <code>head.next.prev</code> it sees that it points back to the object (head) that it's trying to show you. That's a circular condition because if it tries to go further it will start showing ""Apollo"" again so it stops and outputs ""[Circular]"" to let you know it stopped for that reason.  I'll try to draw it out:</p>
+
+<pre><code>_Node: Apollo  &lt;----------+  // this is the circular part
+       next: Boomer  -+   |
+       prev: null     |   |
+_Node: Boomer  &lt;------+   |
+       next: Helo         |
+       prev: Apollo  -----+
+</code></pre>
+
+<p>If it tried to follow <code>head.next.prev</code> it would be back to <code>head</code> again and be in an infinite loop, which it detects and stops.</p>
+",What causes the previous node to be designated as Circular rather than _Node when inserting a new node into a linked list?,2814906
+32,Maven Embedder - running hibernate3:hbm2java programmatically,"<p>I managed to fix the issue. Thank you Tunaki for the link to the Minimal, Complete, and Verifiable example. By exercising these techniques I managed to solve the issue. </p>
+
+<p>Based on the answer from Mykel Alvis  <a href=""https://stackoverflow.com/a/30439890"">https://stackoverflow.com/a/30439890</a> 
+I adjusted my pom to the following:</p>
+
+<pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;org.slf4j&lt;/groupId&gt;
+    &lt;artifactId&gt;slf4j-simple&lt;/artifactId&gt;
+    &lt;version&gt;1.7.5&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.apache.maven&lt;/groupId&gt;
+    &lt;artifactId&gt;maven-embedder&lt;/artifactId&gt;
+    &lt;version&gt;3.3.3&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.eclipse.aether&lt;/groupId&gt;
+    &lt;artifactId&gt;aether-connector-basic&lt;/artifactId&gt;
+    &lt;version&gt;1.0.2.v20150114&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.eclipse.aether&lt;/groupId&gt;
+    &lt;artifactId&gt;aether-transport-wagon&lt;/artifactId&gt;
+    &lt;version&gt;1.0.2.v20150114&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.apache.maven.wagon&lt;/groupId&gt;
+    &lt;artifactId&gt;wagon-http&lt;/artifactId&gt;
+    &lt;version&gt;2.9&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.apache.maven.wagon&lt;/groupId&gt;
+    &lt;artifactId&gt;wagon-provider-api&lt;/artifactId&gt;
+    &lt;version&gt;2.9&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.apache.maven.wagon&lt;/groupId&gt;
+    &lt;artifactId&gt;wagon-http-lightweight&lt;/artifactId&gt;
+    &lt;version&gt;2.9&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+
+<p>Furthermore, I disabled all the other dependencies that weren't being used for this part of the application to work. The combination of above dependencies and commenting unused dependencies solved the issue.</p>
+
+<p>The working extracted version is on <a href=""https://github.com/Weirdfishees/reverse-engineering.git"" rel=""nofollow noreferrer"">https://github.com/Weirdfishees/reverse-engineering.git</a></p>
+",Using Maven Embedder to Execute Hibernate3:hbm2java via Code,1537908
+33,How do I get last modified date from a Hadoop Sequence File?,"<p>Hi i think that you want is the modification time of each input File that enters in your mapper. If it is the case you just have to add a few lines to the mpkorstanje solution:</p>
+
+<pre class=""lang-java prettyprint-override""><code>FileSystem fs = FileSystem.get(URI.create(uri), conf);
+long moddificationTime = fs
+    .getFileStatus((FileSplit)context.getInputSplit())
+    .getPath()).lastModified();
+</code></pre>
+
+<p>With this few changes you can get the fileStatus of each inputSlipt and you can add it to your key in order to use later in your process or make a multipleOutput reduce and write somewhere else in your reduce phase.</p>
+
+<p>I hope this will be usefull</p>
+",What is the method to retrieve the most recent modification timestamp from a Hadoop Sequence File?,1118093
+45,Unable to check the Internet Available,"<p>Use this method to check internet connection </p>
+
+<pre><code>public class ConnectionDetector {
+
+    public ConnectionDetector() {
+    }
+
+    public Boolean check_internet(Context context) {
+        if (context != null) {
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            if (activeNetwork != null) { // connected to the internet
+                if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI || activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+}
+</code></pre>
+
+<p><strong>After this you can create object and check internet connection like this</strong></p>
+
+<p>Fragment</p>
+
+<pre><code>ConnectionDetector connectionDetector = new ConnectionDetector();
+connectionDetector.check_internet(getContext())
+</code></pre>
+
+<p>Activity</p>
+
+<pre><code>ConnectionDetector connectionDetector = new ConnectionDetector();
+connectionDetector.check_internet(this)
+</code></pre>
+",Struggling to verify Internet connectivity status,2183864
+65,Finding highest of 10,"<p>You are looping the 10 times as expected, but each time you are just getting the field's value with <code>getText()</code>. This doesn't wait for the user to change the number, so all 10 of the numbers are the same. You must define <code>counter</code> and <code>largest</code> as fields, and change each time <code>actionPerformed</code> is called. Here's code:</p>
+
+<pre><code>import java.awt.*;
+import java.applet.*;
+import java.awt.event.*;
+import javax.swing.JOptionPane;
+
+public class largest extends Applet implements ActionListener{
+    private static final long serialVersionUID = 1L;
+
+    private int counter = 0; // These are the variables
+    private double largest = 0; // from actionPerformed().
+
+    // ...
+
+    public void actionPerformed(ActionEvent e) {
+        // Variable for user input
+        double number = 0;
+
+        try { //Sanitize user input, make sure input entered is a number
+            number = Double.parseDouble(numberField.getText());
+        } catch (NumberFormatException ex) {
+            numberField.requestFocus();
+            JOptionPane.showMessageDialog(null,
+                    ""Input invalid, please enter an integer"",
+                    ""///-D-A-T-A---E-R-R-O-R-\\\\\\"",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (number &lt; 0 || number &gt; 9) { //Sanitize user input, make sure the given number is between 0 and 9
+            numberField.requestFocus();
+            JOptionPane.showMessageDialog(null,
+                    ""The number entered must be between 0 and 9"",
+                    ""///-D-A-T-A---E-R-R-O-R-\\\\\\"",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        counter++;
+        // Determine what the largest number entered is by comparing to a baseline
+        // of previous numbers or zero if just beginning loop
+        if (number &gt; largest)largest=number;
+        // Allows user to input 10 times
+        if (counter==10)
+        {
+            // Display's the largest number that got entered by user
+            JOptionPane.showMessageDialog(null,
+                    ""The largest number entered was "" + largest);
+        }
+    }
+}
+</code></pre>
+",Determining the maximum value among a set of ten numbers,743897
+69,How to hide AG-Grid once I click button to show some popup (modal),"<p>Add a z-index property to your modalBackground class. The div with this class needs being a child of the body tag also.</p>
+<pre><code>.modalBackground {
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(200, 200, 200);
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center ;
+  z-index: 1;
+}
+</code></pre>
+",What methods can I use to conceal AG-Grid when activating a button to display a modal dialog?,3160798
+103,"""Error: no suitable method found for reduce"" when reducing an int[] array","<p>var sum = Arrays.asList(nums) returns a List&lt;int[]&gt; and consequently the reduce method adds int[] to int[], this is not allowed and leads to compilation error.</p>
+<p>This is a possible solution:</p>
+<pre><code>    int[] nums = { 1,3,4,5,7};
+    var sum= Arrays.stream(nums).reduce(0,(a,b)-&gt;a + b);
+</code></pre>
+<p>or</p>
+<pre><code>var result = Arrays.stream(nums).sum();
+
+
+
+     
+</code></pre>
+","""Encountering 'no applicable method available for reduction' error while processing an int[] array""",3058078
+132,parseFloat() or Number() always return NaN when read from div tag,"<p>The issue is because you have a non-printable character in your HTML. Most quality IDEs will display these graphically - even the SO snippet editor does this, note the red dot before <code>8.40</code></p>
+<p><a href=""https://i.stack.imgur.com/I39rw.png"" rel=""nofollow noreferrer""><img src=""https://i.stack.imgur.com/I39rw.png"" alt=""enter image description here"" /></a></p>
+<p>Remove that character and your code works fine:</p>
+<p><div class=""snippet"" data-lang=""js"" data-hide=""false"" data-console=""true"" data-babel=""false"">
+<div class=""snippet-code"">
+<pre class=""snippet-code-js lang-js prettyprint-override""><code>var cart_subtotal_str = $('.pewc-total-field').text();    
+var cart_subtotal = cart_subtotal_str.replace('£', '');
+var cart_subtotal_num = parseFloat(cart_subtotal);
+
+console.log(cart_subtotal_num);</code></pre>
+<pre class=""snippet-code-html lang-html prettyprint-override""><code>&lt;script src=""https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js""&gt;&lt;/script&gt;
+&lt;span id=""pewc-grand-total"" class=""pewc-total-field""&gt;
+  &lt;span class=""woocommerce-Price-amount amount""&gt;
+    &lt;bdi&gt;
+      &lt;span class=""woocommerce-Price-currencySymbol""&gt;£&lt;/span&gt;
+      8.40
+    &lt;/bdi&gt;
+  &lt;/span&gt;
+&lt;/span&gt;</code></pre>
+</div>
+</div>
+</p>
+<p>If, for whatever reason, you don't have access to the HTML, then you can strip any non-numerical value from the HTML before you call <code>parseFloat()</code>:</p>
+<p><div class=""snippet"" data-lang=""js"" data-hide=""false"" data-console=""true"" data-babel=""false"">
+<div class=""snippet-code"">
+<pre class=""snippet-code-js lang-js prettyprint-override""><code>var cart_subtotal_str = $('.pewc-total-field').text().replace(/[^\d.-]/g, '');
+var cart_subtotal_num = parseFloat(cart_subtotal_str);
+
+console.log(cart_subtotal_num);</code></pre>
+<pre class=""snippet-code-html lang-html prettyprint-override""><code>&lt;script src=""https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js""&gt;&lt;/script&gt;
+&lt;span id=""pewc-grand-total"" class=""pewc-total-field""&gt;
+  &lt;span class=""woocommerce-Price-amount amount""&gt;
+    &lt;bdi&gt;
+      &lt;span class=""woocommerce-Price-currencySymbol""&gt;£&lt;/span&gt; 
+      ‎8.40
+    &lt;/bdi&gt;
+  &lt;/span&gt;
+&lt;/span&gt;</code></pre>
+</div>
+</div>
+</p>
+",Why do parseFloat() and Number() consistently yield NaN when extracting values from a div element?,3350965
+134,Print Individual Elements of List,"<p>I find this too complicated:</p>
+
+<pre><code>x = [col for col in list(zip(*val))[0]]
+y = [col for col in list(zip(*val))[1]]
+</code></pre>
+
+<p>Instead, you could do:</p>
+
+<pre><code>x = [col[0] for col in val]
+y = [col[1] for col in val]
+</code></pre>
+
+<p>Then, create your points data structure:</p>
+
+<pre><code>points = set([(i, j) for i, j in zip(x, y)])
+</code></pre>
+
+<p>Print your points:</p>
+
+<pre><code>for point in points:
+    print(point)
+</code></pre>
+",Display Each Element of a List Separately,2507407
+146,Remove last TD before append to element in dynamic content,"<p>can combine into a simple function that determines whether to add link or not. Seems a lot easier to read also since your variable names are very similar. </p>
+
+<p>The other benefit is you can move the function out of the logic flow in your script and put it anywhere</p>
+
+<pre><code>function getRowHtml(data, showLink) {
+    var row = '&lt;tr data-idproductosolicitud=""' + data.ent.idProductoSolicitud + '"" data-id=""' + data.ent.id + '""&gt;';
+    row += '&lt;td&gt;&lt;input type=""checkbox"" name=""fabLinkChoice[]"" value=""' + data.ent.idProductoSolicitud + '""&gt;&lt;/td&gt;';
+    row += '&lt;td&gt;' + data.ent.nombre + '&lt;/td&gt;';
+    row += '&lt;td&gt;' + data.ent.direccion + '&lt;/td&gt;';
+    row += '&lt;td class=""has_pais fabTd-' + data.ent.idProductoSolicitud + '""&gt;&lt;/td&gt;';
+    row += '&lt;td&gt;' + data.ent.telefono + '&lt;/td&gt;';
+    /* only variation */
+    if (showLink) {
+        row += '&lt;td&gt;&lt;a href=""javascript:void(0)"" class=""modalAgregarPaises"" data-fabricanteDistribuidorId=""' + data.ent.id + '"" data-productoSolicitudId=""' + data.ent.idProductoSolicitud + '"" data-toggle=""modal"" data-target=""#addPaisesFabricante"" data-backdrop=""static""&gt;&lt;i class=""fa fa-plus-circle"" data-toggle=""tooltip"" data-placement=""top"" title=""' + Translator.trans('boton.editable_paises', {}, 'AppBundle') + '""&gt;&lt;/i&gt;&lt;/a&gt;&lt;/td&gt;';
+    }
+    row += '&lt;/tr&gt;';    
+    return row;
+}
+
+$(getRowHtml(data,true)).appendTo(""#fabricanteBody"");
+$(getRowHtml(data,false)).appendTo(""#selFabricanteBody"");
+</code></pre>
+",Eliminate the final TD element prior to adding it to dynamic content.,1157560
+147,Java Getting a link of a product on Ebay/Amazon using JSOUP,"<p>Try this.</p>
+<pre><code>final String itemLink2 = row.select(&quot;div.s-item__info &gt; a&quot;).attr(&quot;href&quot;);
+</code></pre>
+",How to retrieve a product URL from Ebay or Amazon using JSOUP in Java?,2853692
+149,Uncaught SyntaxError: Unexpected number,"<p>You can't use localized decimal separator characters in JavaScript source code. You must use <code>.</code>:</p>
+
+<pre><code>var mainQuest_d1 = 8.16666666666667;
+var mainQuest_d2 = 7.95833333333333;
+var mainQuest_d3 = 8.125;
+</code></pre>
+
+<p>See <a href=""https://stackoverflow.com/q/2085275/139010"">What is the decimal separator symbol in JavaScript?</a></p>
+
+<p>It should be obvious that <code>,</code> has another meaning already. How many elements do you expect the array </p>
+
+<pre><code>[0, 8,16666666666667]
+</code></pre>
+
+<p>to contain?</p>
+","""Unexpected Numeric Input Leading to Syntax Error""",534076
+160,Java Stream group by one attribute and collect max element by another attribute,"<p>Use the <a href=""https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collectors.html#toMap-java.util.function.Function-java.util.function.Function-java.util.function.BinaryOperator-"" rel=""nofollow noreferrer"">toMap</a> with merge function to find the max element on second attribute </p>
+
+<pre><code>Map&lt;String, MyClass&gt; map = myClassList.stream()
+        .collect(Collectors.toMap(MyClass::getAtt1, Function.identity(),
+                BinaryOperator.maxBy(Comparator.comparing(MyClass::getAtt2))));
+</code></pre>
+",Java Stream: How to categorize by a single property and retrieve the highest value based on a different property?,2730860
+165,Regrab $get parameter after dynamic load of a php include file,"<p>you should change <code>dataString</code> to</p>
+
+<pre class=""lang-js prettyprint-override""><code>var dataString = 'keyword='+ faq_search_input +'&amp;page=&lt;?php echo $id; ?&gt;';
+</code></pre>
+",How can I retrieve the $get variable again after dynamically loading a PHP include file?,455217
+170,List elements are being displayed out of order,"<p>This may have something to do with putting a <code>span</code> inside a <code>ul</code>, which is invalid HTML.</p>
+
+<blockquote>
+  <p><a href=""https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul"" rel=""nofollow noreferrer""><strong><code>&lt;ul&gt;</code></strong></a></p>
+  
+  <p><em>Permitted content:</em></p>
+  
+  <p>zero or more <code>&lt;li&gt;</code> elements, eventually mixed with <code>&lt;ol&gt;</code> and <code>&lt;ul&gt;</code> elements.</p>
+</blockquote>
+
+<p>source: <a href=""https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul"" rel=""nofollow noreferrer"">https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul</a></p>
+
+<hr>
+
+<p>If you need to create sub-groups of list items, then nest your lists.</p>
+
+<pre><code>&lt;ul&gt;
+    &lt;li&gt;...&lt;/li&gt;
+    &lt;li&gt;...&lt;/li&gt;
+    &lt;li&gt;
+        &lt;ul&gt;
+            &lt;li&gt;...&lt;/li&gt;
+            &lt;li&gt;...&lt;/li&gt;
+        &lt;/ul&gt;
+    &lt;/li&gt;
+    &lt;li&gt;...&lt;/li&gt;
+&lt;/ul&gt;
+</code></pre>
+
+<hr>
+
+<p><strong>Update</strong> (based on comments and revised question)</p>
+
+<p>In your nav screenshot, the gap along the bottom margin may be caused by <code>display: inline-block</code>. </p>
+
+<p>Here are two methods for removing it:</p>
+
+<ul>
+<li>change the <code>display</code> value to <code>block</code></li>
+<li>add <code>vertical-align: bottom</code> to the rule</li>
+</ul>
+
+<p>For an explanation and other methods see this post:</p>
+
+<ul>
+<li><a href=""https://stackoverflow.com/q/32801095/3597276"">inline-block boxes not fitting in their container</a></li>
+</ul>
+",Why are the items in the list appearing in an unexpected sequence?,1482470
+178,Help Needed in Understanding TPTP Profiling Results,"<p><strong>Base Time</strong>: The amount of time (in seconds) the method has taken to execute. Not including the execution time of any other methods called from this method.</p>
+
+<p><strong>Average base time</strong>: The average base time required to execute this method once.</p>
+
+<p><strong>Cumulative base time</strong>: The amount of time (in seconds) this method took to execute. Including the execution time of any other methods called from this method.</p>
+
+<p><strong>Calls</strong>: The number of times this method was invoked.</p>
+
+<p>You may want to have a look at the following Tutorial, where this information is located: <a href=""http://www.eclipse.org/tptp/home/documents/tutorials/profilingtool/profilingexample_32.html"" rel=""nofollow"">An introduction to profiling Java applications</a></p>
+",Assistance Required for Comprehending TPTP Performance Metrics,217709
+181,Conversion to Dalvik format failed error for Android Grid View,"<p>Some of those examples on the Android developer site are a trifle out of date, and so it may be that the one giving you grief is no longer a great example to work from.</p>
+
+<p>Try <a href=""http://github.com/commonsguy/cw-android/tree/master/Selection/Grid/"" rel=""nofollow noreferrer"">this <code>GridView</code> sample</a> for something that definitely works on current versions of Android.</p>
+",Error encountered while converting to Dalvik format for Android's Grid View implementation,72400
+182,How to color scatterplot in matplotlib based on the values of y axis,"<p>If you are using Numpy's ndarrays, it's simpler</p>
+<pre class=""lang-py prettyprint-override""><code>import numpy as np
+import matplotlib.pyplot as plt
+
+# test data
+y = np.random.randint(2800, 3100, size=(100,))
+x = np.arange(0, 100)
+
+# create a Boolean array (a mask), possibly negate it using the &quot;~&quot; unary operator
+ygt3000 = y&gt;3000
+plt.scatter(x[~ygt3000], y[~ygt3000], color='blue')
+plt.scatter(x[ygt3000], y[ygt3000], color='red')
+</code></pre>
+<p>if you are using <em><strong>real</strong></em> lists, it's a bit more complicated, but can be done using list comprehensions</p>
+<pre class=""lang-py prettyprint-override""><code>x = x.tolist()
+y = y.tolist()
+
+ygt3000 = [val&gt;3000 for val in y]
+plt.scatter([xv for xv, ygt in zip(x, ygt3000) if not ygt],
+            [yv for yv, ygt in zip(y, ygt3000) if not ygt], color='blue') 
+plt.scatter([xv for xv, ygt in zip(x, ygt3000) if ygt],
+            [yv for yv, ygt in zip(y, ygt3000) if ygt], color='red') 
+</code></pre>
+<p>Here it is the result of the code above when applied to two sequences of random numbers.</p>
+<p><a href=""https://i.stack.imgur.com/cdzOw.png"" rel=""nofollow noreferrer""><img src=""https://i.stack.imgur.com/cdzOw.png"" alt=""enter image description here"" /></a></p>
+<hr />
+<p>August 2021, because Trenton McKinney made a beautiful edit (thank you Trenton) this post came again to my attention, and I saw the light</p>
+<pre><code>plt.scatter(x, y, c=['r' if v&gt;3000 else 'b' for v in y])
+</code></pre>
+<hr />
+<p>Just a day later, I realized that a  similar feat can be used with Numpy, taking advantage of <em>advanced indexing</em></p>
+<pre><code>plt.scatter(x, y, c=np.array(('b','r'))[(y&gt;3000).astype(int)])
+</code></pre>
+<p>but honestly I prefer the two-pass approach I've used previously, because it's more to the point and conveys much more meaning. Or, in other words, the latter looks obfuscated code...</p>
+",What methods can be used to assign colors to a scatterplot in matplotlib according to the y-axis values?,3063105
+199,Convert array of employees to Dictionary,"<p>In JavaScript, an array is strictly always numerically indexed structure. So, <code>.toArray</code> abides with that. In PHP an array is closer to what JavaScript considers plain objects.</p>
+
+<hr>
+
+<p>If using <a href=""https://github.com/mihaifm/linq"" rel=""nofollow noreferrer"">this LINQ JavaScript library</a></p>
+
+<p>You can use the <code>.toObject</code> method to produce an object of your format - you need to pass in two functions - a key selector and a value selector, so the object gets built with the correct data:</p>
+
+<pre class=""lang-js prettyprint-override""><code>var allEmployees = [
+    {
+        ""Id"": 1374,
+        ""FirstName"": ""John"",
+        ""LastName"": ""Doe""
+    },
+    {
+        ""Id"": 1375,
+        ""FirstName"": ""Jane"",
+        ""LastName"": ""Doe""
+    }
+];
+var employeeDictionary = Enumerable.from(allEmployees)
+  .toDictionary(""$.Id"", ""$.FirstName+' '+$.LastName"")
+  .toEnumerable()
+  .toObject(entry =&gt; entry.key, entry =&gt; entry.value);
+
+/* output:
+{
+  ""1374"": ""John Doe"",
+  ""1375"": ""Jane Doe""
+}
+*/
+</code></pre>
+
+<p>Using destructuring, the key/value selectors can be transformed to:</p>
+
+<pre class=""lang-js prettyprint-override""><code>.toObject(({key}) =&gt; key, ({value}) =&gt; value);
+</code></pre>
+
+<hr>
+
+<p>If using <a href=""http://neue.cc/reference.htm"" rel=""nofollow noreferrer"">this library for LINQ operations</a>, then you need to slightly change the syntax:</p>
+
+<pre class=""lang-js prettyprint-override""><code>var allEmployees = [
+    {
+        ""Id"": 1374,
+        ""FirstName"": ""John"",
+        ""LastName"": ""Doe""
+    },
+    {
+        ""Id"": 1375,
+        ""FirstName"": ""Jane"",
+        ""LastName"": ""Doe""
+    }
+];
+var employeeDictionary = Enumerable.From(allEmployees)
+  .ToDictionary(""$.Id"", ""$.FirstName+' '+$.LastName"")
+  .ToEnumerable()
+  .ToObject(""$.Key"", ""$.Value"");
+
+/* output:
+{
+  ""1374"": ""John Doe"",
+  ""1375"": ""Jane Doe""
+}
+*/
+</code></pre>
+",Transform a list of employees into a dictionary format.,2635850
+233,In model save() how to get all field starting with 'foo',"<p>There is a <code>get_all_field_names()</code> method that is built into the <code>Meta</code> subclass for all models, and can be found in <code>foo._meta.get_all_field_names()</code>:</p>
+
+<pre><code>&gt;&gt;&gt; from foo.models import Foo
+&gt;&gt;&gt; f = Foo.objects.get(pk=1)
+&gt;&gt;&gt; f._meta.get_all_field_names()
+['active', 'created', 'expires', 'id', , 'inputter', 'reason', 'requester', 'updated']
+</code></pre>
+
+<p>So this would be a simple thing:</p>
+
+<pre><code>def print_all_fields_starting_with(obj, starter):
+    fields = [x for x in obj._meta.get_all_field_names() if x.startswith(starter)]
+    for field in fields:
+        print getattr(obj, field)
+</code></pre>
+
+<p>And in your custom <code>save()</code>:</p>
+
+<pre><code>def save(self):
+    print_all_fields_starting_with(self, ""foo_"")
+    super(MyModel, self).save()
+</code></pre>
+",How can I retrieve all attributes that begin with 'foo' in the save() method of a model?,59520
+237,Trying to close and open a new window using PyQT(Closed),"<p>Inheritance is used to indicate that a class will get all features of its parent class. When you write <code>class child(parent)</code> you make <code>child</code> inherit from <code>parent</code>.</p>
+<p>In your code just do this:</p>
+<pre><code>class Ui_Login(QtGui.QDialog):
+    def __init__(self):
+        QtGui.QDialog.__init__(self)
+</code></pre>
+<p>We call <code>QtGui.QDialog.__init__(self)</code> so that <code>Ui_Login()</code> will be initialized in the same way as <code>QtGui.QDialog()</code></p>
+<p>In the <code>if</code> statement, <code>login_window = QtGui.QDialog()</code> is not needed and <code>setpUi()</code> don't need <code>ui</code> reference because you should use <code>self</code> (replace <code>login_window</code> occurences in <code>setupUi</code> and <code>retranslateUi</code> with <code>self</code>).</p>
+<p>Change Your code to this:</p>
+<pre><code>#!/usr/bin/env python
+
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'taco_login.ui'
+#
+# Created by: PyQt4 UI code generator 4.11.4
+#
+# WARNING! All changes made in this file will be lost!
+
+from PyQt4 import QtCore, QtGui
+
+try:
+     _fromUtf8 = QtCore.QString.fromUtf8
+except AttributeError:
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+         return QtGui.QApplication.translate(context, text, disambig)
+
+class Ui_login_window(QtGui.QDialog):
+    def setupUi(self):
+        self.setObjectName(_fromUtf8(&quot;login_window&quot;))
+        self.resize(255, 150)
+        self.setMinimumSize(QtCore.QSize(255, 150))
+        self.setMaximumSize(QtCore.QSize(255, 150))
+        self.setStyleSheet(_fromUtf8(&quot;QDialog#login_window {\n&quot;
+&quot;    background-color: qlineargradient(spread:pad, x1:0.559, y1:0, x2:0.555, y2:1, stop:0.445455 rgba(48, 48, 48, 255), stop:0.859091 rgba(61, 61, 61, 255), stop:1 rgba(79, 79, 79, 255));\n&quot;
+&quot;}&quot;))
+        self.verticalLayout_2 = QtGui.QVBoxLayout(self)
+        self.verticalLayout_2.setObjectName(_fromUtf8(&quot;verticalLayout_2&quot;))
+        self.widget = QtGui.QWidget(self)
+        self.widget.setObjectName(_fromUtf8(&quot;widget&quot;))
+        self.password_lineEdit = QtGui.QLineEdit(self.widget)
+        self.password_lineEdit.setGeometry(QtCore.QRect(10, 60, 221, 22))
+        self.password_lineEdit.setStyleSheet(_fromUtf8(&quot;QWidget {border:none;}&quot;))
+        self.password_lineEdit.setInputMask(_fromUtf8(&quot;&quot;))
+        self.password_lineEdit.setEchoMode(QtGui.QLineEdit.Password)
+        self.password_lineEdit.setObjectName(_fromUtf8(&quot;password_lineEdit&quot;))
+        self.login_btn = QtGui.QPushButton(self.widget)
+        self.login_btn.setGeometry(QtCore.QRect(10, 100, 91, 17))
+        palette = QtGui.QPalette()
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Base, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Base, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Base, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
+        self.login_btn.setPalette(palette)
+        self.login_btn.setAutoFillBackground(False)
+        self.login_btn.setStyleSheet(_fromUtf8(&quot;QPushButton#login_btn {\n&quot;
+&quot;    background-color: rgb(255, 255, 255);\n&quot;
+&quot;    border:none;\n&quot;
+&quot;}&quot;))
+        self.login_btn.setObjectName(_fromUtf8(&quot;login_btn&quot;))
+        self.username_lineEdit = QtGui.QLineEdit(self.widget)
+        self.username_lineEdit.setGeometry(QtCore.QRect(10, 30, 221, 22))
+        self.username_lineEdit.setStyleSheet(_fromUtf8(&quot;QWidget {border:none;}&quot;))
+        self.username_lineEdit.setInputMask(_fromUtf8(&quot;&quot;))
+        self.username_lineEdit.setObjectName(_fromUtf8(&quot;username_lineEdit&quot;))
+        self.text_1 = QtGui.QTextEdit(self.widget)
+        self.text_1.setGeometry(QtCore.QRect(6, 0, 141, 25))
+        self.text_1.setStyleSheet(_fromUtf8(&quot;QTextEdit#text_1{\n&quot;
+&quot;border: none;\n&quot;
+&quot;    background-color: transparent;\n&quot;
+&quot;}\n&quot;
+&quot;&quot;))
+        self.text_1.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
+        self.text_1.setObjectName(_fromUtf8(&quot;text_1&quot;))
+        self.cancel_btn = QtGui.QPushButton(self.widget)
+        self.cancel_btn.setGeometry(QtCore.QRect(140, 100, 91, 17))
+        palette = QtGui.QPalette()
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Base, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Base, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Base, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
+        self.cancel_btn.setPalette(palette)
+        self.cancel_btn.setAutoFillBackground(False)
+        self.cancel_btn.setStyleSheet(_fromUtf8(&quot;QPushButton#cancel_btn {\n&quot;
+&quot;    background-color: rgb(255, 255, 255);\n&quot;
+&quot;    border:none;\n&quot;
+&quot;}&quot;))
+        self.cancel_btn.setObjectName(_fromUtf8(&quot;cancel_btn&quot;))
+        self.verticalLayout_2.addWidget(self.widget)
+
+        self.retranslateUi()
+        QtCore.QMetaObject.connectSlotsByName(self)
+
+    def retranslateUi(self):
+        self.setWindowTitle(_translate(&quot;login_window&quot;, &quot;TACO&quot;, None))
+        self.password_lineEdit.setText(_translate(&quot;login_window&quot;, &quot;Password&quot;, None))
+        self.login_btn.setText(_translate(&quot;login_window&quot;, &quot;Login&quot;, None))
+        self.username_lineEdit.setText(_translate(&quot;login_window&quot;, &quot;Username&quot;, None))
+        self.text_1.setHtml(_translate(&quot;login_window&quot;, &quot;&lt;!DOCTYPE HTML PUBLIC \&quot;-//W3C//DTD HTML 4.0//EN\&quot; \&quot;http://www.w3.org/TR/REC-html40/strict.dtd\&quot;&gt;\n&quot;
+&quot;&lt;html&gt;&lt;head&gt;&lt;meta name=\&quot;qrichtext\&quot; content=\&quot;1\&quot; /&gt;&lt;style type=\&quot;text/css\&quot;&gt;\n&quot;
+&quot;p, li { white-space: pre-wrap; }\n&quot;
+&quot;&lt;/style&gt;&lt;/head&gt;&lt;body style=\&quot; font-family:\'Sans\'; font-size:10pt; font-weight:400; font-style:normal;\&quot;&gt;\n&quot;
+&quot;&lt;p style=\&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\&quot;&gt;&lt;span style=\&quot; font-size:9pt; font-weight:600; color:#f0f0f0;\&quot;&gt;Welcome to TACO!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;&quot;, None))
+        self.cancel_btn.setText(_translate(&quot;login_window&quot;, &quot;Cancel&quot;, None))
+
+    @QtCore.pyqtSignature(&quot;on_cancel_btn_clicked()&quot;)
+    def Cancel_btn(self):
+        self.close()
+
+if __name__ == &quot;__main__&quot;:
+    import sys
+    app = QtGui.QApplication(sys.argv)
+    ui = Ui_login_window()
+    ui.setupUi()
+    ui.show()
+    sys.exit(app.exec_())
+</code></pre>
+",Attempting to terminate a window and initiate a new one with PyQT (Closed),1445706
+239,"Velocity: Spaces before or after #if, #else and #end?","<p>You don't need <a href=""http://velocity.apache.org/engine/1.7/user-guide.html#vtl-formatting-issues"" rel=""nofollow noreferrer"">spaces</a> in velocity:</p>
+
+<blockquote>
+  <p>Velocity's behaviour is to gobble up excess whitespace. </p>
+</blockquote>
+
+<pre><code>#set($foo=[""$10 and "",""a pie""])#foreach($a in $foo)$a#end
+</code></pre>
+
+<p>Sometimes you can't add spaces because your file you are rendering is intolerant for spaces.</p>
+
+<p>About writing text right after else with <code>#{else}</code>, you can change to use velocity comments after, as suggested in <a href=""http://grokbase.com/t/velocity/user/053c1km0pe/extra-space-appearing-in-the-if-else-block"" rel=""nofollow noreferrer"">mailing list</a>:</p>
+
+<pre><code>#if( $foo == $bar)it's true!#else#**#it's not!#end
+</code></pre>
+","Formatting in Velocity: Should there be spaces surrounding #if, #else, and #end directives?",2108351
+260,Abide disable button and enable on validation in Zurb Foundation,"<p>Not quite what you are looking for because most forms can not be submitted unless your form is validated. Listening to see if the form validates and then enabling a submit button seems like its overkill. </p>
+
+<p>Thus <code>data-abide</code> has this in mind when they created </p>
+
+<blockquote>
+  <p>If a submit event is fired, a <code>valid.fndtn.abide</code> event is triggered
+  when the form is valid and an <code>invalid.fndtn.abide</code> event is triggered
+  when the form is invalid.</p>
+</blockquote>
+
+<p>with that in mind i would enable the button and then </p>
+
+<pre><code>$(form)
+ .on('invalid.fndtn.abide', function () {
+  var invalid_fields = $(this).find('[data-invalid]');
+ // tell the user that invalid fields must be fixed before submit
+ })
+ .on('valid.fndtn.abide', function () {
+// your submit action here.
+ });
+</code></pre>
+
+<p>There is an option in the <code>/foundation.abide.js</code> if you want to change out the validation works </p>
+
+<pre><code> Abide.defaults = {
+validateOn: 'fieldChange', // options: fieldChange, manual, submit
+</code></pre>
+
+<p>try changing it to manual and see if it works like '<code>abide : {live_validate : true, // validate the form as you go</code> that was in older versions</p>
+",Implementing a conditional button state in Zurb Foundation based on validation checks,1459241
+261,JCheckBox with Image,"<p>Without knowing the layout manager, it's difficult to be 100%, but if I was doing this, I might use a <code>GridBagLayout</code>...</p>
+
+<pre><code>testate.setLayout(new GridBagLayout());
+GridBagConstraints gbc = new GridBagConstraints();
+gbc.gridy = 0;
+gbc.insets = new Insets(4, 4, 4, 4);
+gbc.anchor = GridBagConstraints.WEST;
+for (String testata : listaTestate) {
+    gbc.gridx = 0;
+    JCheckBox checkbox = new JCheckBox();
+    ImageIcon imgTestata = new ImageIcon(getClass().getResource(""/img/""+testata+"".png""));
+    checkbox.setName(testata);
+    checkbox.setBackground(new Color(194, 169, 221));
+    checkbox.setSelected(true);
+    testate.add(checkbox, gbc);
+    gbc.gridx++;
+    JLabel label = new JLabel(imgTestata);
+    label.setBackground(new Color(194, 169, 221));
+    testate.add(label, gbc);
+    gbc.gridy++;
+}
+</code></pre>
+
+<p>You may also like to have a read through:</p>
+
+<ul>
+<li><a href=""http://docs.oracle.com/javase/tutorial/deployment/webstart/retrievingResources.html"" rel=""nofollow noreferrer"">Retrieving Resources</a></li>
+<li><a href=""http://docs.oracle.com/javase/8/docs/technotes/guides/lang/resources.html"" rel=""nofollow noreferrer"">Location-Independent Access to Resources</a></li>
+<li><a href=""https://stackoverflow.com/questions/7229226/should-i-avoid-the-use-of-setpreferredmaximumminimumsize-methods-in-java-swi"">Should I avoid the use of set(Preferred|Maximum|Minimum)Size methods in Java Swing?</a></li>
+<li><a href=""http://docs.oracle.com/javase/tutorial/2d/images/loadimage.html"" rel=""nofollow noreferrer"">Reading/Loading an Image</a></li>
+<li><a href=""http://docs.oracle.com/javase/tutorial/uiswing/layout/index.html"" rel=""nofollow noreferrer"">Laying Out Components Within a Container</a></li>
+<li><a href=""http://docs.oracle.com/javase/tutorial/uiswing/layout/gridbag.html"" rel=""nofollow noreferrer"">How to Use GridBagLayout</a></li>
+</ul>
+",Image-Enhanced JCheckBox Component,1164292
+265,Get a value of a variable of a class instance while being at another class instance,"<p>OK. I found the answer.
+We just need to make the <code>cellArray[][]</code> in <code>SpreadSheetUI</code> class a <code>static</code> variable like this.</p>
+
+<pre><code>public static NewCell[][] cellArray=new NewCell[20][9];
+</code></pre>
+
+<p>Then from the instance of the <code>NewCell</code> class; we can access the values of <code>cellArray[][]</code> like this.</p>
+
+<pre><code>SpreadSheetUI.cellArray[row][column].userInput=&lt;Expression&gt;;
+</code></pre>
+
+<p>Or else, using getters and setters;</p>
+
+<pre><code>String data=SpreadSheetUI.cellArray[row][column].getUserInput();
+</code></pre>
+",Retrieve a variable's value from one class instance while operating within a different class instance.,1186488
+266,How to mix server-side Jax-rs call with native files without prefix?,"<p>This is pretty easy to achieve. Just register Jersey ServletContainer in web.xml as a filter (instead of servlet) - see the bottom of <a href=""http://jersey.java.net/nonav/apidocs/latest/jersey/com/sun/jersey/spi/container/servlet/package-summary.html"" rel=""nofollow"">this page</a> for an example - and either use <a href=""http://jersey.java.net/nonav/apidocs/latest/jersey/com/sun/jersey/spi/container/servlet/ServletContainer.html#PROPERTY_WEB_PAGE_CONTENT_REGEX"" rel=""nofollow"">ServletContainer.PROPERTY_WEB_PAGE_CONTENT_REGEX</a> or <a href=""http://jersey.java.net/nonav/apidocs/latest/jersey/com/sun/jersey/spi/container/servlet/ServletContainer.html#FEATURE_FILTER_FORWARD_ON_404"" rel=""nofollow"">ServletContainer.FEATURE_FILTER_FORWARD_ON_404</a> init param to make the static content accessible.</p>
+",What is the method for integrating server-side JAX-RS calls with local files without using a prefix?,242731
+276,Print json element separately,"<p>The problem is that <code>""name""</code> is not a JSON array, it is a JSON string. Thus, you need to JSON decode the ""name"" string as well.</p>
+
+<pre><code>$time1 = json_decode($row['time']);
+$time1name = json_decode($time1-&gt;{'name'})
+</code></pre>
+
+<p>and then</p>
+
+<pre><code>&lt;? php echo $time1name[0]; ?&gt;
+</code></pre>
+
+<p>should print <code>""nine""</code>.</p>
+
+<hr>
+
+<p>If possible, you should format your JSON correctly so that it is an actual JSON array like so:</p>
+
+<pre><code>""name"": [""nine"",""tweleve"",""four""]
+</code></pre>
+
+<p>Notice no <code>""</code>s around the array brackets (<code>[</code>,<code>]</code>).</p>
+",Display individual components of a JSON object.,1789186
+282,Can't replot a graph on the same figure MATPLOTLIB,"<p>The reason why a new figure pops up every time you move the mouse is because moving the mouse triggers <code>mouse_move()</code> and inside this function, you create a new figure with <code>fig2 = plt.figure()</code>.</p>
+<p>To avoid that, you can create both figures outside the functions. But then, when you plot the graphs, you have to replace <code>plt.imshow</code> by <code>ax1.imshow</code> and <code>plt.plot</code> by <code>ax2.plot</code> to get the graphs on the right figure. And also <code>plt.clf()</code> has to be replaced by <code>ax1.clear()</code>/<code>ax2.clear()</code>.</p>
+<p>Finally, you can remove the <code>plt.show()</code> from <code>mouse_move()</code> since matplotlib event loop is already running (called in <code>readDZT()</code>). The call to <code>plt.show()</code> freezes the tkinter GUI as long as the plots are displayed so I also added <code>root.update_idletasks()</code> in  <code>readDZT()</code> to make the messagebox disappear before launching matplotlib's event loop.</p>
+<p>Here is the full code:</p>
+<pre><code>import tkinter as tk
+from tkinter import messagebox, filedialog
+import pandas as pd
+import matplotlib
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+from matplotlib.figure import Figure
+import numpy as np
+import os
+from readgssi import readgssi
+
+# data
+Data = []
+xData = []
+xAxes = []
+
+# create plots
+fig1 = plt.figure()
+ax1 = fig1.add_subplot(111)
+fig2 = plt.figure()
+ax2 = fig2.add_subplot(111)
+
+def readDZT():
+    global xAxes, Data
+    file_path = filedialog.askopenfilename()
+    file_name, file_extension = os.path.splitext(file_path)
+
+    if file_extension == '.DZT':
+        messagebox.showinfo(&quot;INFO&quot;, &quot;Your DZT File Has Been Selected Successfully&quot;)
+        hdr, arrs, gps = readgssi.readgssi(infile=file_path, verbose=True)
+
+        Samples = hdr['rh_nsamp']
+
+        X_Axes = np.array(range(0, Samples))
+        xAxes = X_Axes[2::1]
+        df = pd.DataFrame(arrs[0])
+        Data = df.iloc[2::1, 0::1]
+        # clear plots
+        ax1.clear()
+        ax2.clear()
+        # plot 2D map in ax1
+        ax1.imshow(Data, aspect='auto', cmap='bone')
+        fig1.canvas.mpl_connect('motion_notify_event', mouse_move)
+        fig1.canvas.draw_idle()
+        fig2.canvas.draw_idle()
+        # force update of tkinter GUI before launching matplotlib's event loop
+        root.update_idletasks()
+        plt.show()
+    else:
+        messagebox.showwarning(&quot;WARNING&quot;, &quot;You Have Been Selected a Different Format&quot;)
+
+
+def mouse_move(event):
+    x = event.xdata
+    print(x)
+    if len(Data) and x is not None:  # there is something to plot
+        ax2.clear()  # clear second plot
+        x = int(x)
+        ax2.plot(xAxes, Data[x])  # plot slice in ax2
+        fig2.canvas.draw_idle()
+
+root = tk.Tk()
+root.title(&quot;IHM&quot;)
+root.geometry(&quot;1000x800&quot;)
+
+Resources_frame = tk.LabelFrame(root, bd=2, relief=tk.GROOVE, text=&quot;Conversion Area&quot;)
+Resources_frame.place(x=5, y=5, width=250, height=80)
+
+tk.Label(Resources_frame, text=&quot;Select your File &quot;).grid(row=0, column=0, sticky=tk.W)
+tk.Label(Resources_frame, text=&quot;Convert Selected file &quot;).grid(row=1, column=0, sticky=tk.W)
+
+btn_rs = tk.Button(Resources_frame, relief=tk.GROOVE, padx=8, pady=1, text=&quot;Browse&quot;,
+                   command=readDZT).grid(row=0, column=1)
+
+root.mainloop()    
+</code></pre>
+",How can I refresh a graph within the same figure using MATPLOTLIB?,3065277
+293,Not able to retrieve data in the other controller using common shared service,"<p>You have a typo in the service:</p>
+
+<pre><code>function getObjectToEdit() {
+        return objecTtoEdit;
+}
+</code></pre>
+
+<p>change to:</p>
+
+<pre><code>function getObjectToEdit() {
+        return objectToEdit;
+}
+</code></pre>
+",Struggling to access data from another controller through a shared service mechanism?,1823466
+299,Can not import mongo object in other file,"<p>As I suspected, this is a <strong>circular import</strong> problem.</p>
+
+<p>You can track the closed loop of dependencies looking at the traceback:</p>
+
+<pre><code>app -&gt; resources -&gt; database -&gt; app
+</code></pre>
+
+<p>This is a common mistake and not properly documented in Flask tutorials. As explained <a href=""https://lepture.com/en/2018/structure-of-a-flask-project"" rel=""nofollow noreferrer"">here by Lepture</a>, you should avoid declaring db in the <code>__init__.py</code></p>
+
+<blockquote>
+  <p>I always keep this one certain rule when writing modules and packages:</p>
+  
+  <p><strong>Don't backward import from root <code>__init__.py</code>.</strong></p>
+</blockquote>
+
+<p>How should you do it, then?</p>
+
+<ul>
+<li>declare db in the proper module (<code>db.py</code>)</li>
+<li>import it <strong>inside</strong> the application factory</li>
+</ul>
+
+<p>I found myself reluctant towards this pattern, I thought those <code>import</code> statements didn't belong inside a function. But this is the way to go.</p>
+
+<p>So, your files should look something alike:</p>
+
+<p><strong>app/common/db.py</strong></p>
+
+<pre><code>from flask_pymongo import PyMongo
+mongo = PyMongo
+</code></pre>
+
+<p><strong>app/__init__.py</strong></p>
+
+<pre><code>from flask import Flask
+...
+
+def create_app(config_class=Config):
+    app = Flask(__name__)
+    app.config.from_object(config_class)
+
+    from app.common.db import mongo
+    mongo.init_app(app)
+    ...
+</code></pre>
+
+<p>and when you need your database connection, i.e. in resources module, you should import it like</p>
+
+<pre><code>from app.common.db import mongo
+</code></pre>
+
+<p>Note: to avoid future problems, your blueprints should also be declared elsewhere and import on creation time. I really encourage you to read the <a href=""https://lepture.com/en/2018/structure-of-a-flask-project"" rel=""nofollow noreferrer"">post by Lepture</a> to better understand this approach.</p>
+",Unable to import MongoDB object into a different file,2326699
+309,org.sonar.api.utils.SonarException: Can not add twice the same measure on org.sonar.api.resources.File,"<p>Please use the Java plugin version 2.2.1 that was released to fix this very issue.</p>
+
+<p>In version 2.2 if no report is present JaCoCo sets coverage to 0 which provoke the issue you face. Whereas in 2.2.1 if no report is present, coverage is not set.</p>
+",org.sonar.api.utils.SonarException: Is it possible to insert a duplicate measure into org.sonar.api.resources.File?,970890
+333,Reading Large PCAP with Tshark in Smaller Parts,"<p>To my knowledge, tshark will read and analyze all packets before doing anything else.</p>
+<p>You should consider using <em>tcpdump</em> instead whom packet analysis is lighter.</p>
+<p>Something like this should be (a little) faster:</p>
+<blockquote>
+<p>tcpdump -r &quot;Your_file&quot; -w &quot;ouput_filename&quot; -C 2250</p>
+</blockquote>
+<p>Where 2250 is the size (in Mbytes) of each of the 4 new output files.</p>
+",Splitting a Large PCAP File into Manageable Sections Using Tshark,2725575
+339,Best way to handle a MouseClick on JButton,"<p>Yes, you will need to add an <code>ActionListener</code> and do your mumbo-jumbo in <code>actionPerformed()</code>. Use the <code>setBackground()</code> to change the background color. :)</p>
+",Optimal methods for managing MouseClick events on a JButton,948582
+342,Project Euler #23 (Java). I can't figure out what's wrong. Answer is off by 64,"<p>The nested <code>for</code> loop should start with <code>i</code> instead of <code>i+1</code> (otherwise you ignore sum with same indices):</p>
+
+<pre><code>for (int i=0; i&lt;listSize; i++) {
+
+    for (int j=i; j&lt;listSize; j++) {
+
+        tempNum = list.get(i) + list.get(j);
+        if (tempNum &lt; limit) {
+            sumList.add(tempNum);
+        }
+    }
+}
+</code></pre>
+",Project Euler Problem 23 in Java: I'm struggling to identify the issue causing my answer to be 64 units incorrect.,990534
+370,How to check two time period for overlap in django?,"<p>You can use Q object to do this query.</p>
+<pre><code>from django.db.models import Q
+
+overlapping_slots = Slot.objects.filter(
+    Q(start_time__lt=new_start_time, end_time__gt=new_start_time) | 
+    Q(start_time__lt=new_end_time, end_time__gt=new_end_time)
+)
+
+if overlapping_slots.exists():
+    # invalidate the form here
+</code></pre>
+<p>Basically you are checking if there are any Slots in the DB where new_start_time is between the start and end times of that slot, and where new_end_time is between the start and end time of that slot.
+documentation for Q objects: <a href=""https://docs.djangoproject.com/en/3.2/topics/db/queries/#complex-lookups-with-q-objects"" rel=""nofollow noreferrer"">https://docs.djangoproject.com/en/3.2/topics/db/queries/#complex-lookups-with-q-objects</a></p>
+",What is the method to determine if two time intervals intersect in Django?,3147096
+386,How to add components dynamically divided evenly between two columns?,"<p>You may use a JPanel with GridLayout passing 0 lines in its constructor with 2 columns:</p>
+
+<pre><code>JPanel panel = new JPanel(new GridLayout(0 ,2));
+</code></pre>
+
+<p>It means that the panel will increase in height when you add components to it, while keeping always 2 columns</p>
+
+<p>The code to add the JButtons will be as simple as this:</p>
+
+<pre><code>for(int i = 0; i &lt; jButtonList.size(); i++) {
+    panel.add(jButtonList.get(i));
+}
+</code></pre>
+",What is the best way to dynamically distribute components evenly across two columns?,467015
+394,OOP classes design,"<p>the better way will be:</p>
+
+<pre><code>interface Algorithm {
+
+    void executeAlgorithm();
+
+}
+</code></pre>
+
+<p>and have classes, that implement Algorithm interface, instead of functions. Algorithm1, Algorithm2, Algorithm3 and so on.</p>
+
+<p>and have table:</p>
+
+<pre><code>Algorithm[,] algorithmTable = { { new Algorithm1(), new Algorithm2() },
+                                { new Algorithm3(), new Algorithm4() },
+                                { new Algorithm5(), new Algorithm6() }
+                              };
+</code></pre>
+
+<p>and have maps</p>
+
+<pre><code>Map&lt; Class&lt;?&gt; , Integer &gt; itemBaseMap = new HashMap&lt;&gt;();
+
+Map&lt; Class&lt;?&gt; , Integer &gt; dueToBaseMap = new HashMap&lt;&gt;();
+</code></pre>
+
+<p>and somewhere build this maps</p>
+
+<pre><code>itemBaseMap.add( Canceled.class , 0 );
+itemBaseMap.add( Modified.class , 1 );
+itemBaseMap.add( Added.class , 2 );
+
+dueToBaseMap.add( Provider.class, 0 );
+dueToBaseMap.add( Company.class, 1 );
+</code></pre>
+
+<p>and in doSomething method you can write</p>
+
+<pre><code>void doSomething( ItemBase itemBase, DueToBase dueToBase ) {
+    Integer itemBaseIndex = itemBaseMap.get( itemBase.getClass() );
+    Integer dueToBaseIndex = dueToBaseMap.get( dueToBase.getClass() );
+
+    Algorithm algorithm = algorithmTable[ itemBaseIndex, dueToBaseIndex ];
+
+    algorithm.executeAlgorithm();
+}
+</code></pre>
+",How should I design classes in object-oriented programming?,429946
+406,Subsetting a df by rows sum and column sum,"<p>Use boolean indexing:</p>
+
+<pre><code>df1.set_index(['candidate', 'code']).loc[
+    lambda x: x.sum(axis=1) &gt; 50, lambda x: x.sum(axis=0) &gt; 100
+]
+</code></pre>
+
+<p>lambdas allow operator chaining but if you want a cleaner way you can also do</p>
+
+<pre><code>df1 = df1.set_index(['candidate', 'code'])
+df1.loc[df1.sum(axis=1) &gt; 50, df1.sum(axis=0) &gt; 100]
+</code></pre>
+
+<p>Both yield</p>
+
+<pre><code>                county1  county3  county5
+candidate code                           
+cand1     10        100     1000      100
+cand2     20       1000       20       20
+cand3     30       5000       30        3
+cand5     50         50       20        2
+</code></pre>
+
+<p>where candidate and code columns are the index of DataFrame. You can call <code>reset_index()</code> at the end if you want them as regular columns.</p>
+",How can I filter a DataFrame based on the sum of its rows and the sum of its columns?,2119836
+415,Why does Google Drive API returns incomplete response?,"<p>All right. I found the answer. The info on the spec page is incomplete. As pointed out in <a href=""https://developers.google.com/drive/v3/web/performance"" rel=""nofollow noreferrer"">another page</a>, the API calls accept a <code>fields</code> parameter which specify the fields to return.</p>
+",What could be the reason for the Google Drive API returning an incomplete response?,1759772
+419,Using NestedRuntimeException and NestedCheckedException,"<p>I would advice for not using them. You can get the same functionality using ExceptionUtils from Apache Commons Lang (org.apache.commons.lang3.exception.ExceptionUtils) and you would not bind your code so heavily to the Spring Framework - which even if very cool - is an external dependency.</p>
+",How can I utilize NestedRuntimeException and NestedCheckedException in my code?,1166947
+422,Filter array of objects by array strings and match with substrings of the object,"<p>You need to check some value as well.</p>
+<p><div class=""snippet"" data-lang=""js"" data-hide=""false"" data-console=""true"" data-babel=""false"">
+<div class=""snippet-code"">
+<pre class=""snippet-code-js lang-js prettyprint-override""><code>const
+    searchTags = ['damiencbib', 'ADLs'],
+    data = [{ key: ""ACCOR02a"", type: ""techreport"", AUTHOR: ""ACCORD"", INSTITUTION: ""ACCORD"", KEYWORDS: ""damiencbib adl"", MONTH: ""June"", TITLE: ""'Etat de l'art sur les Langages de Description d'Architecture (ADLs)"", URL: ""http://projects.infres.enst.fr/accord/"", YEAR: ""2002"", ""BDSK-URL-1"": ""http://projects.infres.enst.fr/accord/"" }, { key: ""ACM94b"", type: ""article"", AUTHOR: ""ACM"", INSTITUTION: ""ACM"", JOURNAL: ""Communications of the ACM"", KEYWORDS: ""scglib"", MONTH: ""May"", NUMBER: ""5"", TITLE: ""Reverse Engineering"", VOLUME: ""37"", YEAR: ""1994"" }],
+    result = data.filter(object =&gt; searchTags.every(tag =&gt; Object
+        .values(object)
+        .some(s =&gt; s.includes(tag))
+    ));
+
+console.log(result);</code></pre>
+<pre class=""snippet-code-css lang-css prettyprint-override""><code>.as-console-wrapper { max-height: 100% !important; top: 0; }</code></pre>
+</div>
+</div>
+</p>
+","How can I filter an array of objects based on an array of strings, ensuring that the strings match substrings within the objects?",3183024
+435,Nested span mouseover issue in IE,"<p>Found the workaround.</p>
+
+<p>I replaced parent span with the <code>div</code> with <code>display:inline-block</code> and it is working everywhere now!</p>
+
+<p>Thanks!</p>
+",Problem with mouseover event on nested spans in Internet Explorer,1593699
+503,Redirect stdin from a file in eclipse with run configuration,"<p>This is the announcement and description of the feature for Eclipse 4.5 (Mars): <a href=""http://eclipse.org/mars/noteworthy/#_assigning_stdin_to_a_file"" rel=""noreferrer"">http://eclipse.org/mars/noteworthy/#_assigning_stdin_to_a_file</a></p>
+
+<blockquote>
+  <p>Stdin can now be assigned to a file in the <strong>Common</strong> tab of launch
+  configuration dialogs.
+  <img src=""https://i.stack.imgur.com/WCWSD.png"" alt=""enter image description here""></p>
+</blockquote>
+
+<p>As expected, this is a new feature of the just released Eclipse 4.5 and will therefore not work in an older version.</p>
+",How can I set up Eclipse's run configuration to redirect standard input from a file?,1323246
+505,Python Binary Divide by 2 method,"<p>You can use a recursion function for that :</p>
+
+<pre><code>def binary(a,l=[]):
+ if a&gt;0:    
+    l.append(a%2)
+    return binary(a/2)
+ else:
+    return ''.join(map(str,l[::-1]))
+
+print binary(22)
+</code></pre>
+
+<p>result :</p>
+
+<pre><code>10110
+</code></pre>
+
+<p>In this function while <code>a&gt;0</code> we append <code>a%2</code> to a list and call function with <code>a/2</code> at last we would have a list that we need to reverse (<code>l[::-1]</code>) and convert to string (<code>map(str,l[::-1])</code>) and at last concatenated (<code>''.join()</code>) !</p>
+",How can I implement a method in Python to perform binary division by 2?,1123111
+506,Playing and cutting video using Java,"<p>For the first part you might have a look at <a href=""http://code.google.com/p/vlcj/"" rel=""nofollow"">vlcj</a>. </p>
+",How can I play and edit video files in Java?,277648
+513,Write to a text file without duplicate or override its content,"<h2>Using a List</h2>
+
+<p>Since you want to support duplicate names, I suggest you use a list and the following logic:</p>
+
+<ul>
+<li>when you read from the file, record the current size of the list. Store the result in a variable: <code>int originalSize = list.size()</code></li>
+<li>in your program, ask the user to write new names and add them to the list</li>
+<li><p>when you're asked to save the list to the disk, only start writing the list from index <code>originalSize</code>.</p>
+
+<pre><code>for (int i = originalSize; i &lt; kontoArrayList.size(); i++) {
+    fw.write(kontoArrayList.get(i).getNavn());
+}
+</code></pre></li>
+</ul>
+
+<h2>Using LinkedHashSet</h2>
+
+<p>If you <strong>didn't</strong> have the duplicate names requirement, <code>LinkedHashSet</code> would have been a more natural option. I'm adding it to my answer for your knowledge.</p>
+
+<ul>
+<li>A <code>Set</code> is a collection type that contains a unique version of each element you inserted into it, even if you inserted it multiple times</li>
+<li>A <code>LinkedHashSet</code> is a specific implementation of <code>Set</code> that preserves insertion order. That is, if you insert <code>a, a, q, r, b, q, s</code> in this order, your set will contain  <code>a, q, r, b, s</code> and will return the elements in the original order when you iterate over it.</li>
+</ul>
+
+<p>That way, you can load the elements from the file in an ordered and unique way, then insert new names at the end of the set, and finally write the output back to the file.</p>
+",How can I append to a text file while ensuring that no duplicate entries are added and the existing content is not overwritten?,2094144
+530,JAVA drawing graphic,"<p>Start by having a look at <a href=""http://www.oracle.com/technetwork/java/painting-140037.html"" rel=""nofollow noreferrer"">Painting in AWT and Swing</a> and <a href=""https://docs.oracle.com/javase/tutorial/uiswing/painting/"" rel=""nofollow noreferrer"">Performing Custom Painting</a>.</p>
+
+<p>The basic problem is, you painting directly to the image, which means, unless you have a separate copy, you're just compounding each successive rectangle on top of the last.</p>
+
+<p>Instead, you want to paint each of them separately, something like...</p>
+
+<p><a href=""https://i.stack.imgur.com/wPeyv.gif"" rel=""nofollow noreferrer""><img src=""https://i.stack.imgur.com/wPeyv.gif"" alt=""enter image description here""></a></p>
+
+<pre><code>import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
+public class SelectionExample {
+
+    public static void main(String[] args) {
+        new SelectionExample();
+    }
+
+    public SelectionExample() {
+        EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+                }
+
+                JFrame frame = new JFrame(""Testing"");
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setLayout(new BorderLayout());
+                frame.add(new TestPane());
+                frame.pack();
+                frame.setLocationRelativeTo(null);
+                frame.setVisible(true);
+            }
+        });
+    }
+
+    public class TestPane extends JPanel {
+
+        private Rectangle selection = new Rectangle();
+        private Point clickPoint;
+
+        private BufferedImage tempimage;
+
+        public TestPane() {
+            try {
+                tempimage = ImageIO.read(new File(""/Users/shane/Dropbox/MegaTokyo/thumnails/2.jpg""));
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            MouseAdapter ma = new MouseAdapter() {
+
+                @Override
+                public void mouseDragged(MouseEvent e) {
+                    int minX = Math.min(e.getX(), clickPoint.x);
+                    int minY = Math.min(e.getY(), clickPoint.y);
+                    int maxX = Math.max(e.getX(), clickPoint.x);
+                    int maxY = Math.max(e.getY(), clickPoint.y);
+
+                    selection.x = minX;
+                    selection.y = minY;
+                    selection.width = maxX - minX;
+                    selection.height = maxY - minY;
+                    repaint();
+                }
+
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    clickPoint = new Point(e.getPoint());
+                }
+
+            };
+
+            addMouseListener(ma);
+            addMouseMotionListener(ma);
+        }
+
+        @Override
+        public Dimension getPreferredSize() {
+            return tempimage == null ? new Dimension(200, 200) : new Dimension(tempimage.getWidth(), tempimage.getHeight());
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2d = (Graphics2D) g.create();
+            int x = (getWidth() - tempimage.getWidth()) / 2;
+            int y = (getHeight() - tempimage.getHeight()) / 2;
+            g2d.drawImage(tempimage, x, y, this);
+            if (selection.width &gt; 0 &amp;&amp; selection.height &gt; 0) {
+                g2d.setColor(new Color(0, 0, 255, 64));
+                g2d.fill(selection);
+                g2d.setColor(Color.BLUE);
+                g2d.draw(selection);
+            }
+            g2d.dispose();
+        }
+    }
+
+}
+</code></pre>
+",How can I create graphic drawings in Java?,1518486
+535,Whats wrong with my site's code?,"<p>You're not including jQuery in your test page. The console says</p>
+
+<blockquote>
+  <p>Uncaught ReferenceError: $ is not defined</p>
+</blockquote>
+
+<p>And you aren't including jquery.js either from a CDN or locally in your code.</p>
+
+<p>Include 
+</p>
+
+<pre><code>http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js
+</code></pre>
+
+<p>in your page, or host your own copy locally. Using a CDN is recommended as a cached copy may already be available on the client, which speeds up page load times.</p>
+
+<p><strong>Always</strong> have your browser's error console open when testing and debugging JavaScript. You will catch and fix most if not all syntactical or technical errors with it open.</p>
+",What issue is present in the code of my website?,381347
+540,How to use self-defined variable in @require (Greasemonkey),"<p>The metadata block of a userscript (including its <code>@require</code>s) can't be changed after the script is loaded, but you <em>can</em> create a helper function that takes in script URLs and appends that script to the DOM:</p>
+
+<pre><code>const appendScript = url =&gt; new Promise(
+  (resolve) =&gt; {
+    const script = document.createElement('script');
+    script.onload = resolve;
+    script.src = url;
+    document.body.appendChild(script);
+  }
+);
+const path = 'pathA'; // change this string when needed
+Promise.all([
+  appendScript(path + '/file1'),
+  appendScript(path + '/file2')
+])
+  .then(() =&gt; {
+    // everything is loaded
+  });
+</code></pre>
+
+<p>Live snippet example, just so you can see the code working:</p>
+
+<p><div class=""snippet"" data-lang=""js"" data-hide=""true"" data-console=""true"" data-babel=""false"">
+<div class=""snippet-code snippet-currently-hidden"">
+<pre class=""snippet-code-js lang-js prettyprint-override""><code>const appendScript = url =&gt; new Promise(
+  (resolve) =&gt; {
+    const script = document.createElement('script');
+    script.onload = resolve;
+    script.src = url;
+    document.body.appendChild(script);
+  }
+);
+const path = 'pathA'; // change this string when needed
+Promise.all([
+  appendScript('https://cdnjs.cloudflare.com/ajax/libs/react/16.6.3/umd/react.production.min.js'),
+  appendScript('https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.6.3/umd/react-dom.production.min.js')
+])
+  .then(() =&gt; {
+    console.log('React is loaded!');
+  });</code></pre>
+</div>
+</div>
+</p>
+
+<p>Note that this will result in the script being loaded into the page, rather than into the sandbox, though that may well not be relevant for your case.</p>
+",What is the method to utilize a user-defined variable within the @require directive in Greasemonkey?,2631992
+542,get item from dict and count number of items in the list,"<p>It's a dictionary, but keys like <code>insert</code> and <code>replace</code> are not strings, they're instances of the <code>jsondiff.Symbol</code> class. That's why they don't have quotes around them -- this class has a custom representation that just returns the symbol name.</p>
+<p>So to access it I think you have to use</p>
+<pre><code>d = diff(dfpulledlist, dfloadedlist)
+print(d[jsondiff.insert])
+</code></pre>
+",How can I retrieve an item from a dictionary and determine the number of elements in the corresponding list?,3322595
+543,model.trainable = False - weights frozen and untrainable?,"<p>What you did works, but people generally do it layer by layer instead, because you might eventually decide to unfreeze certain layers:</p>
+<pre><code>for layer in model.layers:
+    layer.trainable = False
+</code></pre>
+<p><code>model.layers</code> returns a list, so you can also unfreeze just the last few layers:</p>
+<pre><code>for layer in model.layers[-10:]:
+    layer.trainable = False
+</code></pre>
+<p>You can verify what <em>can</em> be trained with</p>
+<pre><code>model.trainable_variables
+</code></pre>
+<pre><code>[]
+</code></pre>
+<p>In this case, nothing.</p>
+",Does setting model.trainable to False mean that the weights are frozen and cannot be trained?,2854465
+544,Timeout-per-turn logic for a game,"<p>Sounds like what you want is a <a href=""https://nodejs.org/api/timers.html#timers_cleartimeout_timeout"" rel=""nofollow noreferrer"">clearTimeout</a>. Basically, you would clear the timeout if the player answers within the next five seconds, otherwise, you carry on with kicking the player out of the game as normal. You can get the timeout ID as a return value from <code>setTimeout</code>.</p>
+
+<p>I'm making an assumption on your code, but this would basically be how it would go:</p>
+
+<pre><code>var playerTimeout = setTimeout(function () {
+  removePlayer(player);
+  startNextPlayersTurn();
+}, 5000);
+
+player.on('answer', function() {
+  clearTimeout(playerTimeout);
+  startNextPlayersTurn();
+});
+</code></pre>
+",How can I implement a timeout mechanism for each turn in a game?,1770846
+553,update models from other model odoo,"<p>Edit your done fuction <code>wkf</code> to be like :</p>
+
+<pre><code>@api.multi
+def done(self):
+    self.state = 'done'
+    if self.job_id_new :
+       self.job_id = self.job_id_new.id
+    if self.country_work_id_new :
+       self.country = self.country_work_id_new.id
+</code></pre>
+
+<p>To get today :</p>
+
+<pre><code>if  self.date_transfer &lt;= self.create_date : 
+    self.date_transfer = fields.datetime.now()
+</code></pre>
+",How can I update records in one Odoo model based on data from another model?,2320646
+555,Convert UTC timezone to IST python,"<pre><code>from datetime import datetime    
+import pytz    
+tz_NY = pytz.timezone('Asia/Kolkata')   
+datetime_NY = datetime.now(tz_NY)  
+print(&quot;India time:&quot;, datetime_NY.strftime(&quot;%Y-%m-%d %H:%M:%S.%f&quot;))       
+&gt;&gt;India time: 2021-05-03 12:25:21.877976
+</code></pre>
+",How can I convert UTC time to IST in Python?,2853634
+563,Disable Scroll on overflow-y: scroll div - Scroll Page instead,"<p>I would approach this problem by setting <code>overflow-y: hidden</code> by default and toggling it to <code>scroll</code> while the desired modifier key is down. I've used the shift key for this example to avoid cross-platform native behavior with control + scrolling.</p>
+
+<p>Note: for the example to work you need to click into the result iframe before you hold shift.</p>
+
+<p><div class=""snippet"" data-lang=""js"" data-hide=""false"" data-console=""true"" data-babel=""false"">
+<div class=""snippet-code"">
+<pre class=""snippet-code-js lang-js prettyprint-override""><code>const container = document.querySelector("".container"")
+const keyCode = 16 // shift
+
+document.addEventListener(""keydown"", e =&gt; {
+  if (e.keyCode === keyCode) {
+    container.style.overflowY = ""scroll""
+    console.log(""Scrolling Enabled"")
+  }
+})
+
+document.addEventListener(""keyup"", e =&gt; {
+  if (e.keyCode === keyCode) {
+    container.style.overflowY = ""hidden""
+    console.log(""Scrolling Disabled"")
+  }
+})</code></pre>
+<pre class=""snippet-code-css lang-css prettyprint-override""><code>.container {
+  max-height: 100px;
+  border: 1px solid red;
+  font-size: 18px;
+  overflow-y: hidden;
+}</code></pre>
+<pre class=""snippet-code-html lang-html prettyprint-override""><code>&lt;div class=""container""&gt;
+  Content&lt;br /&gt;
+  Content&lt;br /&gt;
+  Content&lt;br /&gt;
+  Content&lt;br /&gt;
+  Content&lt;br /&gt;
+  Content&lt;br /&gt;
+  Content&lt;br /&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Hold &lt;code&gt;shift&lt;/code&gt; to scroll in the box above.&lt;/p&gt;</code></pre>
+</div>
+</div>
+</p>
+",How can I prevent scrolling within a div that has `overflow-y: scroll` and instead allow the entire page to scroll?,2688688
+566,Convert BytesIO into File,"<p>It would be helpful if you supplied the library you were using to work on excel files, but here's a buckshot of solutions, based on some assumptions I'm making:</p>
+<ul>
+<li>Based on the first paragraph in the <a href=""https://docs.python.org/3.5/library/io.html#overview"" rel=""noreferrer"">io module's documentation</a>, it sounds like all the concrete classes- including BytesIO- are <a href=""https://docs.python.org/3.5/glossary.html#term-file-object"" rel=""noreferrer"">file-like objects</a>. Without knowing what code you've tried so far, I don't know if you have tried passing the BytesIO to the module you're using.</li>
+<li>On the off chance that doesn't work, you can simply convert BytesIO to a another io Writer/Reader/Wrapper by passing it to the constructor. Example:</li>
+</ul>
+<p>.</p>
+<pre><code>import io
+
+b = io.BytesIO(b&quot;Hello World&quot;) ## Some random BytesIO Object
+print(type(b))                 ## For sanity's sake
+with open(&quot;test.xlsx&quot;) as f: ## Excel File
+    print(type(f))           ## Open file is TextIOWrapper
+    bw=io.TextIOWrapper(b)   ## Conversion to TextIOWrapper
+    print(type(bw))          ## Just to confirm 
+</code></pre>
+<ul>
+<li>You may need to check which kind of Reader/Writer/Wrapper is expected by the module you're using to convert the BytesIO to the correct one</li>
+<li>I believe I have heard that (for memory reasons, due to extremely large excel files) excel modules do not load the entire file. If this ends up meaning that what you need is a physical file on the disk, then you can easily write the Excel file temporarily and just delete it when you're done. Example:</li>
+</ul>
+<p>.</p>
+<pre><code>import io
+import os
+
+with open(&quot;test.xlsx&quot;,'rb') as f:
+    g=io.BytesIO(f.read())   ## Getting an Excel File represented as a BytesIO Object
+temporarylocation=&quot;testout.xlsx&quot;
+with open(temporarylocation,'wb') as out: ## Open temporary file as bytes
+    out.write(g.read())                ## Read bytes into file
+
+## Do stuff with module/file
+os.remove(temporarylocation) ## Delete file when done
+</code></pre>
+<p>I'll hope that one of these points will solve your problem.</p>
+",How can I transform a BytesIO object into a file?,1231167
+567,Variables values don't get out from DoInBackground(),"<p>You are calling <code>request.executeAsync</code> from <code>doInBackground</code>. Therefore, <code>doInBackground</code> will return immediately and <code>onPostExecute</code> may be called before your <code>onCompleted</code> callback is called.</p>
+",The values of variables are not being returned from the DoInBackground() method.,1823721
+584,Import multiple CSV files into pandas and concatenate into one DataFrame,"<p>See <a href=""https://pandas.pydata.org/docs/user_guide/io.html"" rel=""noreferrer"">pandas: IO tools</a> for all of the available <code>.read_</code> methods.</p>
+<p>Try the following code if all of the CSV files have the same columns.</p>
+<p>I have added <code>header=0</code>, so that after reading the CSV file's first row, it can be assigned as the column names.</p>
+<pre><code>import pandas as pd
+import glob
+import os
+
+path = r'C:\DRO\DCL_rawdata_files' # use your path
+all_files = glob.glob(os.path.join(path , &quot;/*.csv&quot;))
+
+li = []
+
+for filename in all_files:
+    df = pd.read_csv(filename, index_col=None, header=0)
+    li.append(df)
+
+frame = pd.concat(li, axis=0, ignore_index=True)
+</code></pre>
+<p>Or, with attribution to a comment from <a href=""https://stackoverflow.com/users/3888455/sid"">Sid</a>.</p>
+<pre class=""lang-py prettyprint-override""><code>all_files = glob.glob(os.path.join(path, &quot;*.csv&quot;))
+
+df = pd.concat((pd.read_csv(f) for f in all_files), ignore_index=True)
+</code></pre>
+<hr />
+<ul>
+<li>It's often necessary to identify each sample of data, which can be accomplished by adding a new column to the dataframe.</li>
+<li><a href=""https://docs.python.org/3/library/pathlib.html"" rel=""noreferrer""><code>pathlib</code></a> from the standard library will be used for this example. It treats paths as objects with methods, instead of strings to be sliced.</li>
+</ul>
+<h3>Imports and Setup</h3>
+<pre class=""lang-py prettyprint-override""><code>from pathlib import Path
+import pandas as pd
+import numpy as np
+
+path = r'C:\DRO\DCL_rawdata_files'  # or unix / linux / mac path
+
+# Get the files from the path provided in the OP
+files = Path(path).glob('*.csv')  # .rglob to get subdirectories
+</code></pre>
+<h3>Option 1:</h3>
+<ul>
+<li>Add a new column with the file name</li>
+</ul>
+<pre class=""lang-py prettyprint-override""><code>dfs = list()
+for f in files:
+    data = pd.read_csv(f)
+    # .stem is method for pathlib objects to get the filename w/o the extension
+    data['file'] = f.stem
+    dfs.append(data)
+
+df = pd.concat(dfs, ignore_index=True)
+</code></pre>
+<h3>Option 2:</h3>
+<ul>
+<li>Add a new column with a generic name using <code>enumerate</code></li>
+</ul>
+<pre class=""lang-py prettyprint-override""><code>dfs = list()
+for i, f in enumerate(files):
+    data = pd.read_csv(f)
+    data['file'] = f'File {i}'
+    dfs.append(data)
+
+df = pd.concat(dfs, ignore_index=True)
+</code></pre>
+<h3>Option 3:</h3>
+<ul>
+<li>Create the dataframes with a list comprehension, and then use <a href=""https://numpy.org/doc/stable/reference/generated/numpy.repeat.html"" rel=""noreferrer""><code>np.repeat</code></a> to add a new column.
+<ul>
+<li><code>[f'S{i}' for i in range(len(dfs))]</code> creates a list of strings to name each dataframe.</li>
+<li><code>[len(df) for df in dfs]</code> creates a list of lengths</li>
+</ul>
+</li>
+<li>Attribution for this option goes to this plotting <a href=""https://stackoverflow.com/a/65951915/7758804"">answer</a>.</li>
+</ul>
+<pre class=""lang-py prettyprint-override""><code># Read the files into dataframes
+dfs = [pd.read_csv(f) for f in files]
+
+# Combine the list of dataframes
+df = pd.concat(dfs, ignore_index=True)
+
+# Add a new column
+df['Source'] = np.repeat([f'S{i}' for i in range(len(dfs))], [len(df) for df in dfs])
+</code></pre>
+<h3>Option 4:</h3>
+<ul>
+<li>One liners using <a href=""https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.assign.html"" rel=""noreferrer""><code>.assign</code></a> to create the new column, with attribution to a comment from <a href=""https://stackoverflow.com/users/2573061/c8h10n4o2"">C8H10N4O2</a></li>
+</ul>
+<pre class=""lang-py prettyprint-override""><code>df = pd.concat((pd.read_csv(f).assign(filename=f.stem) for f in files), ignore_index=True)
+</code></pre>
+<p>or</p>
+<pre class=""lang-py prettyprint-override""><code>df = pd.concat((pd.read_csv(f).assign(Source=f'S{i}') for i, f in enumerate(files)), ignore_index=True)
+</code></pre>
+",How can I import several CSV files into pandas and merge them into a single DataFrame?,834394
+585,Python Yahoo Stock Exchange (Web Scraping),"<p>These are just a few helpful tips for python development (and scraping):</p>
+
+<h3>Python Requests library.</h3>
+
+<p>The <a href=""http://docs.python-requests.org/en/latest/"" rel=""nofollow"">python requests</a> library is excellent at simplifying the requests process.</p>
+
+<h3>No need to use a <code>while</code> loop</h3>
+
+<p><code>for</code> loops are really useful in this situation. </p>
+
+<pre><code>symbolslist = [""aapl"",""spy"", ""goog"",""nflx""]
+for symbol in symbolslist:
+    # Do logic here...
+</code></pre>
+
+<h3>Use xpath over regular expressions</h3>
+
+<pre><code>import requests
+import lxml
+
+url = ""http://www.google.co.uk/finance?q=""+symbol+""&amp;q1=1""
+r = requests.get(url)
+xpath = '//your/xpath'
+root = lxml.html.fromstring(r.content)
+</code></pre>
+
+<h3>No need to compile your regular expressions each time.</h3>
+
+<p>Compiling regex's takes time and effort. You can abstract these out of your loop.</p>
+
+<pre><code>regex = '&lt;span id=""yfs_l84_' + symbolslist[i] + '""&gt;(.+?)&lt;/span&gt;'
+pattern = re.compile(regex)
+
+for symbol in symbolslist:
+    # do logic
+</code></pre>
+
+<h3>External Libraries</h3>
+
+<p>As mentioned in the comment by <code>drewk</code> both Pandas and Matplot have native functions to get Yahoo quotes or you can use the <a href=""https://github.com/cgoldberg/ystockquote"" rel=""nofollow"">ystockquote</a> library to scrape from Yahoo. This is used like so:</p>
+
+<pre><code>#!/bin/env python
+import ystockquote
+
+symbolslist = [""aapl"",""spy"", ""goog"",""nflx""]
+for symbol in symbolslist:
+    print (ystockquote.get_price(symbol))
+</code></pre>
+",How can I perform web scraping to retrieve stock data from Yahoo Finance using Python?,641135
+588,open video file with opencv java,"<p>To me its a mystery why the so called automatically generated java wrapper for opencv is lacking this functionality. I first created a new VideoCapture class with a VideoCapture(String filename) constructor and called the private native method. This lead to an an unsatisfied link error:</p>
+
+<pre><code>Exception in thread ""main"" java.lang.UnsatisfiedLinkError:       org.opencv.highgui.VideoCapture.n_VideoCapture(Ljava/lang/String;)J
+    at org.opencv.highgui.VideoCapture.n_VideoCapture(Native Method)
+    at org.opencv.highgui.VideoCapture.&lt;init&gt;(VideoCapture.java:90)
+    at Tester.main(Tester.java:30)
+</code></pre>
+
+<p>This indicates that the corresponding JNIEXPORT is missing.
+Luckily this can be fixed.</p>
+
+<p>Surprisingly the needed c-constructor is already defined in <strong>opencv-2.4.6/modules/highgui/include/opencv2/highgui/highgui.cpp</strong></p>
+
+<pre><code>CV_WRAP VideoCapture(const string&amp; filename);
+</code></pre>
+
+<p>We add the constructor we long to the VideoCapture class in <strong>opencv-2.4.6/modules/java/generator/src/java/highgui+VideoCapture.java:</strong></p>
+
+<pre><code>//
+// C++: VideoCapture::VideoCapture(const string&amp; filename)
+//
+
+// javadoc: VideoCapture::VideoCapture(String filename)
+public VideoCapture(String filename)
+{
+    nativeObj = n_VideoCapture(filename);
+
+    return;
+}
+</code></pre>
+
+<p>The crucial and tricky step was to add the jni export. Especially finding the right method name for the JNICALL proved to be challenging, since the constructor is overloaded and takes a java class as argument. Additionally we need to convert the java sting into a c-string. The rest is copied from the other constructors.</p>
+
+<p>In <strong>opencv-2.4.6/modules/java/generator/src/cpp/VideoCapture.cpp</strong> we add this new JNIEXPORT:</p>
+
+<pre><code>//
+//   VideoCapture::VideoCapture(const string&amp; filename)
+//
+
+JNIEXPORT jlong JNICALL Java_org_opencv_highgui_VideoCapture_n_1VideoCapture__Ljava_lang_String_2
+(JNIEnv* env, jclass, jstring filename);
+
+JNIEXPORT jlong JNICALL Java_org_opencv_highgui_VideoCapture_n_1VideoCapture__Ljava_lang_String_2
+(JNIEnv* env, jclass, jstring filename)
+{
+    try {
+        LOGD(""highgui::VideoCapture_n_1VideoCapture__Ljava_lang_String_2()"");
+        const char* jnamestr = env-&gt;GetStringUTFChars(filename, NULL);
+        string stdFileName(jnamestr);
+        VideoCapture* _retval_ = new VideoCapture( jnamestr );
+
+        return (jlong) _retval_;
+    } catch(cv::Exception e) {
+        LOGD(""highgui::VideoCapture_n_1VideoCapture__Ljava_lang_String_2() catched cv::Exception: %s"", e.what());
+        jclass je = env-&gt;FindClass(""org/opencv/core/CvException"");
+        if(!je) je = env-&gt;FindClass(""java/lang/Exception"");
+        env-&gt;ThrowNew(je, e.what());
+        return 0;
+    } catch (...) {
+        LOGD(""highgui::VideoCapture_n_1VideoCapture__Ljava_lang_String_2() catched unknown exception (...)"");
+        jclass je = env-&gt;FindClass(""java/lang/Exception"");
+        env-&gt;ThrowNew(je, ""Unknown exception in JNI code {highgui::VideoCapture_n_1VideoCapture__Ljava_lang_String_2()}"");
+        return 0;
+    }
+}
+</code></pre>
+
+<p>Recompile OpenCV and it should work.</p>
+",How can I open a video file using OpenCV in Java?,677669
+593,How do I efficiently generate Prime Numbers up until 3037000499 (the square root of Long.MAX)?,"<h2>Arrays</h2>
+
+<p>Use 2 or more dimensional maps. So converting long to two integers (for accessing the arrays) will be like this: </p>
+
+<p><code>array[N / Integer.MAX_VALUE][N % Integer.MAX_VALUE]</code> where N is <code>long</code> and <code>array</code> is the boolean array.</p>
+","What is the best method to generate prime numbers up to 3037000499, which is the square root of Long.MAX?",2512435
+596,virtualenv on Windows: not over-riding installed package,"<p>Based on the bug you filed at bitbucket, it looks like you're using the PYTHONPATH environment variable to point to a directory with some packages, including Django 1.1.1. By design, PYTHONPATH always comes first in your sys.path, even when you have a virtualenv activated (because PYTHONPATH is under your direct and immediate control, and people use it for local overrides).</p>
+
+<p>In this case, if you don't want that PYTHONPATH when this virtualenv is activated, you'll need to take care of that yourself; perhaps by creating a custom batch file that both calls the virtualenv's activate.bat and also modifies PYTHONPATH.</p>
+",How can I ensure that a virtual environment on Windows overrides an installed package?,81703
+638,Interpretation of variables in multi-level regression with random effects,"<ul>
+<li>1|campaign_uid</li>
+</ul>
+
+<p>These are the random intercepts for campaigns that you mentioned in your list of parameters.</p>
+
+<ul>
+<li>1|campaign_uid_sd</li>
+</ul>
+
+<p>This is the standard deviation of the aforementioned random campaign intercepts.</p>
+
+<ul>
+<li>CPA_sd</li>
+</ul>
+
+<p>This is the residual standard deviation. That is, your model can be written (in part) as CPA_ij ~ Normal(b0 + b1*treatment_ij + u_j, sigma^2), and <code>CPA_sd</code> represents the parameter sigma.</p>
+
+<ul>
+<li>1|campaign_uid_offset</li>
+</ul>
+
+<p>This is an alternative parameterization of the random intercepts. <code>bambi</code> uses this transformation internally in order to improve the MCMC sampling efficiency. Normally this transformed parameter is hidden from the user by default; that is, if you make the traceplot using <code>results.plot()</code> rather than <code>pm.traceplot(model.backend.trace)</code> then these terms are hidden unless you specify <code>transformed=True</code> (it's False by default). It's also hidden by default from the <code>results.summary()</code> output. For more information about this transformation, see <a href=""http://twiecki.github.io/blog/2017/02/08/bayesian-hierchical-non-centered/"" rel=""noreferrer"">this nice blog post by Thomas Wiecki</a>.</p>
+",How should one understand the variables in a multi-level regression model that includes random effects?,1893864
+665,Sending inline images using Smack XMPP,"<p>You can just make it accepted by default (the user won't be prompted) by using smth like:</p>
+
+<pre><code>final FileTransferManager manager = new FileTransferManager(connection); //Use your xmpp connection
+manager.addFileTransferListener(new FileTransferListener() {
+    public void fileTransferRequest(FileTransferRequest request) {
+            IncomingFileTransfer transfer = request.accept();
+            try {
+                InputStream input = transfer.recieveFile();
+                //This will be a binary stream and you can process it. Create image and display it inline in your chat app.
+            } catch (XMPPException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+</code></pre>
+",How can I send inline images with Smack for XMPP?,898677

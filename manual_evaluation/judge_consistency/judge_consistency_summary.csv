@@ -1,0 +1,6 @@
+judge,n_total,n_parseable,parse_rate,agreement_pct,kappa,interp
+GPT-4o (used in paper),62,62,100.0,80.6,0.59,moderate
+qwen2.5-coder:32b,62,62,100.0,72.6,0.47,moderate
+deepseek-coder:33b,62,46,74.2,60.9,0.13,poor
+deepseek-coder-v2:16b,62,62,100.0,45.2,-0.04,poor
+starcoder2:15b,62,36,58.1,38.9,-0.13,poor
