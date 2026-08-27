@@ -22,29 +22,7 @@ LLM-as-a-Judge.
 
 ## Workflow
 
-```mermaid
-flowchart TD
-    A["Stack Overflow dump (2008–2024)<br/>Java/Python + accepted answer"] --> B["RAG Knowledge Base<br/>3,428,217 posts<br/>(title + accepted answer,<br/>all-mpnet-base-v2 embeddings)"]
-    B --> C["Synthetic Question Set<br/>n = 666 (from KB)"]
-    A --> D["Stack Overflow Testing Set<br/>n = 3,376 (2025, unseen)"]
-    A --> E["GitHub Discussions Testing Set<br/>n = 1,732 (2025, unseen)"]
 
-    C --> Q1["RQ1 — Pipeline selection<br/>11 methods x 6 LLMs, answer quality<br/>=> HB1 best (mean 7.50)"]
-    C --> Q2["RQ2 — Retrieval usefulness<br/>manual annotation, 11 methods<br/>=> HB1 0.77 (best)"]
-    D --> Q3["RQ3 — Generalization<br/>quality vs accepted, hallucination,<br/>developer helpfulness"]
-    E --> Q3
-    D --> Q4["RQ4 — Cost & latency<br/>HB1 vs zero-shot"]
-
-    subgraph HB1 ["HB1 / Adaptive HyDE pipeline"]
-        direction LR
-        X1["question"] --> X2["GPT-4o<br/>hypothetical answer"] --> X3["embed +<br/>adaptive retrieval<br/>(0.9 → 0.1)"] --> X4["top-10 accepted<br/>answers as context"] --> X5["final LLM answer"]
-    end
-```
-
-The Knowledge Base is built once (Dataset Construction); the three evaluation sets
-feed the four RQ stages. The two 2025 testing sets are crawled after the KB and
-every LLM's training cutoff, so answers reflect retrieval/generalization, not
-memorization.
 
 ## Repository layout and mapping to the paper's RQs
 
