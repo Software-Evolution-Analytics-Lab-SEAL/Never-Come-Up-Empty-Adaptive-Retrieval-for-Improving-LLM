@@ -82,39 +82,7 @@ Rebuilding the KB and embeddings on an A100 80GB takes ~14 hours.
 - **Ollama** for the four small open-source LLMs.
 - **OpenRouter** (or OpenAI) API key: GPT-4o (HyDE + judge) and the two frontier answer LLMs (GPT-4.1, DeepSeek-r1-70B). Set `OPENROUTER_KEY_FILE` to a file holding your key.
 
-## Reproducing each research question
 
-| Paper RQ | Where | Entry points | Headline result |
-|----------|-------|--------------|-----------------|
-| **RQ1** — highest-quality pipeline | `RQ1/scripts/` | `retrieval.py` → `generation.py` → `judge.py` → `evaluation.py` | HB1 has the highest mean answer quality (7.50) across the 6 LLMs |
-| **RQ2** — retrieval usefulness | `RQ1/manual_retrieval_eval/scripts/` | `1_sample_queries.py` … `14_kappa_annotators.py` | HB1 retrieves the most useful context (0.77 vs 0.60 for RAG-Fusion, 0.36 for BM25) |
-| **RQ3** — generalization | `RQ2/scripts/` (+ `RQ3/data/`) | `retrieval_adaptive.py` → `generation.py` → `judge.py` → `hallucination.py` | Exceeds the accepted answer; hallucination 29.1% → 24.0% on the 4 small LLMs; identical per-LLM ranking on both platforms (Spearman ρ = 1.00) |
-| **RQ4** — cost and latency | `RQ4/scripts/` | `parse_log_timings.py` → `build_cost_table.py` | +0.48 s/query (HyDE), 22 ms retrieval; <½ cent/query API cost |
-
-## Manual evaluation
-
-`manual_evaluation/` holds the annotator spreadsheets (two PhD annotators; each
-sample sized for 90% confidence, 10% margin of error):
-
-| File | Size | Study | Inter-annotator κ |
-|------|------|-------|-------------------|
-| `01_usefulness_pipelines.xlsx` | 62 × 11 methods | Retrieval usefulness | 0.46 |
-| `02_usefulness_thresholds.xlsx` | 62 × 9 thresholds | HB1 threshold sweep (0.1→0.9) | 0.34 |
-| `03_final_answer_usefulness.xlsx` | 68 × 6 LLMs | Developer helpfulness of HB1 answers | 0.35 |
-| `04_hallucination.xlsx` | 68 | LLM-vs-human hallucination-judge alignment | 0.46 |
-
-`annotator_agreement_summary.csv` reports κ per study. `judge_consistency/`
-validates GPT-4o as the judge against **four** code-specialized judges
-(Qwen2.5-Coder-32B, DeepSeek-Coder-33B, DeepSeek-Coder-v2-16B, StarCoder2-15B):
-GPT-4o aligns best with the human consensus, and only Qwen2.5-Coder is
-competitive.
-
-## Cite
-
-```
-@article{NeverComeUpEmpty2026,
-  title   = {Never Come Up Empty: Adaptive Retrieval for Improving LLM Developer Support},
-  journal = {IEEE Transactions on Software Engineering},
   year    = {2026},
   note    = {Under review}
 }
