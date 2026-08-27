@@ -21,8 +21,7 @@ Six answer LLMs: **LLaMa-3.1-8B, Mistral-7B, Granite-3.1-8B, Qwen3-8B**
 LLM-as-a-Judge.
 
 ## Workflow
-
-
+[View the PDF](RQ_Overall_workflow_v12.pdf)
 
 ## Repository layout and mapping to the paper's RQs
 
